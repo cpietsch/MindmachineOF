@@ -12,7 +12,7 @@
 
 trackManager::trackManager(){
 	//generateMeditation();
-	readXML();
+	readXML("track1.xml");
 	
 	speed=1;
 	bTimerReached=true;
@@ -41,16 +41,19 @@ void trackManager::update(){
 		currentItem++;
 		if(currentItem<track.size()){
 			playItem(currentItem);
-		}		
+		} else {
+            ofMessage msg("end");
+            ofSendMessage(msg);
+
+        }
     }
 }
 
-float trackManager::translateFreq(string name){
+float trackManager::getFreq(string name){
 	float output=0;
-	name=ofToLower(name);
-	char freq=name[0];
-	
-	if(freq=='b') {
+    char freq = ofToLower(name)[0];
+                
+    if(freq=='b') {
 		output=14.4;
 	} 
 	else if(freq=='a') {
@@ -64,14 +67,23 @@ float trackManager::translateFreq(string name){
 	}
 	else if (freq=='g') {
 		output=40.4;
+	} else if (freq=='e') {
+		output=0;
 	}
 	
 	return output;	
 }
+int trackManager::getAlt(string name){
+    char n = name[0];
+    bool alt = isupper(n);
+    if(alt) return 1;
+    else return 0;
+}
 
-void trackManager::readXML(){
+void trackManager::readXML(string filename){
+    track.clear();
 	ofxXmlSettings XML;
-	XML.loadFile("track.xml");
+	XML.loadFile(filename);
 	int numTracks = XML.getNumTags("Track:Phase");
 	
 	if(numTracks > 0){

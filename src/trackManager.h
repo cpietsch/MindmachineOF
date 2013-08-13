@@ -20,8 +20,9 @@ public:
 	void playItem(int);
 	void update();
 	void stop();
-	void readXML();
-	float translateFreq(string);
+	void readXML(string filename);
+	float getFreq(string);
+    int getAlt(string name);
 	
 	float startTime; // store when we start time timer
 	float endTime; // when do want to stop the timer

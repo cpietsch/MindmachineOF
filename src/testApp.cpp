@@ -5,7 +5,7 @@
 void testApp::setup(){
 	ofSetVerticalSync(true);
 	
-	ofBackground(255);	
+	ofBackground(0);
 	ofSetLogLevel(OF_LOG_VERBOSE);
     
     // SERIAL
@@ -28,12 +28,43 @@ void testApp::setup(){
 	rAudio.assign(bufferSize, 0.0);
     
     soundStream.setup(this, 2, 0, sampleRate, bufferSize, 4);
+    
+    freqs = "batd";
+    manual = 0;
+    blinkMode = 0;
+    freq=14.4;
+    
+    gui.setup("panel");
+    gui.add(centralTone.set( "base", 200, 10, 400 ));
+    gui.add(playButton.setup("play"));
+    gui.add(stopButton.setup("stop"));
+    gui.add(trackNumber.set( "trackNumber", 1, 1, 5 ));
+    gui.add(loadButton.setup("load"));
+
+
+    playButton.addListener(this,&testApp::playButtonPressed);
+    stopButton.addListener(this,&testApp::stopButtonPressed);
+    loadButton.addListener(this,&testApp::loadButtonPressed);
+
+
+    gui.loadFromFile("settings.xml");
 
 }
 
+void testApp::playButtonPressed(){
+    start();
+    track.playItem(0);
+}
+void testApp::stopButtonPressed(){
+    stop();
+    track.stop();
+}
+void testApp::loadButtonPressed(){
+    track.readXML("track"+ofToString(trackNumber)+".xml");
+}
 
 void testApp::setLED(float freq, int alt){
-    
+    ofLog(OF_LOG_NOTICE, ofToString(freqs)+ " " + ofToString(alt));
     int millis = 1000.0/(freq*2);
     string message = ofToString(millis)+','+ofToString(alt)+'\n';
     unsigned char* chars = (unsigned char*) message.c_str(); 
@@ -53,7 +84,7 @@ void testApp::update(){
 			play=false;
 			ofSetFrameRate(60);
 		} else {
-			volume-=0.01;
+			volume-=0.001;
 		}
 	}
 	
@@ -72,6 +103,7 @@ void testApp::draw(){
     ofFill();
     ofColor(255,255,255,60);
     ofRect(0, 0, (ofGetWidth()/track.track.size())*track.currentItem, 40);
+    gui.draw();
 }
 
 
@@ -145,10 +177,12 @@ void testApp::audioOut(float * output, int bufferSize, int nChannels){
 
 //--------------------------------------------------------------
 void testApp::gotMessage(ofMessage msg){
-	float freq=track.translateFreq(msg.message);
+	freq=track.getFreq(msg.message);
+    blinkMode=track.getAlt(msg.message);
+    
 	if(freq!=0){
 		binauralBeat=freq;
-        setLED(freq, 1);
+        setLED(freq, blinkMode);
 		frameChanged=true;
         
 	} else {
@@ -169,6 +203,8 @@ void testApp::keyPressed  (int key){
         track.playItem(0);
     } else if( key == 's') {
         track.stop();
+    } else if( key == 'a') {
+        start();
     }
 }
 void testApp::exit(){
@@ -177,9 +213,14 @@ void testApp::exit(){
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){ 
-	
+	if(key==0){
+        
+    }
 }
 
+void testApp::mouseScroll(int device, int axis, int value){
+    centralTone+=value;
+}
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y){
 	
@@ -192,7 +233,30 @@ void testApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
+    /*
+    cout << button << endl;
+    if (button==0) {
+       manual++;
+    }
+    if (button==2){
+        manual--;
+    }
+    if(button==1){
+        if(blinkMode==0) blinkMode=1;
+        else blinkMode=0;
+        
+    }
     
+    if (manual>freqs.length()-1) {
+        manual=freqs.length()-1;
+    }
+    if(manual<=0){
+        manual=0;
+    }
+    
+    ofMessage msg(ofToString(freqs[manual]));
+    ofSendMessage(msg);
+     */
 }
 
 //--------------------------------------------------------------

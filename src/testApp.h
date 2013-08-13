@@ -2,8 +2,11 @@
 
 #include "ofMain.h"
 #include "trackManager.h"
+#include "ofxManyMouse.h"
+#include "ofxGui.h"
 
-class testApp : public ofBaseApp{
+
+class testApp : public ofBaseApp , public ofxManyMouse{
 	
 	public:
 		void setup();
@@ -19,11 +22,17 @@ class testApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+    void mouseScroll(int device, int axis, int value);
     void setLED(float freq, int alt);
     void audioOut(float * input, int bufferSize, int nChannels);
     void startSequenz();
 	void start();
 	void stop();
+    void playButtonPressed();
+    void stopButtonPressed();
+    void loadButtonPressed();
+
+
     
     void exit();
     
@@ -59,6 +68,16 @@ class testApp : public ofBaseApp{
     bool play=false;
     
     float binauralBeat;
-    int centralTone=194;
+    string freqs;
+    int manual;
+    int blinkMode;
+    float freq;
+    
+    ofParameter<int> centralTone,trackNumber;
+    ofxButton playButton,stopButton,loadButton;
+
+    ofxPanel gui;
+    
+
 };
 
