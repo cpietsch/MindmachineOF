@@ -5,6 +5,14 @@
 #include "ofxManyMouse.h"
 #include "ofxGui.h"
 
+class ofStringLoggerChannel {
+public:
+    ofStringLoggerChannel::ofStringLoggerChannel(){
+        
+    }
+};
+
+
 
 class testApp : public ofBaseApp , public ofxManyMouse{
 	
